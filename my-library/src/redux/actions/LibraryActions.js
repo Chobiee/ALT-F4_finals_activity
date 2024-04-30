@@ -14,6 +14,13 @@ export const setBook = (books) => {
     };
 };
 
+export const setBorrowed = (borroweds) => {
+    return{
+        type: ActionTypes.SET_BORROWEDS,
+        payload: borroweds,
+    };
+};
+
 export const setSelectedStudent = (student) => {
     return{
         type: ActionTypes.SELECTED_STUDENT,
@@ -27,3 +34,12 @@ export const setSelectedBook = (book) => {
         payload: book,
     };
 };
+
+export const setSelectedBorrowed = (borrowed) => {
+    return{
+        type: ActionTypes.SELECTED_BORROWED,
+        payload: borrowed,
+    };
+};
+
+

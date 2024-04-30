@@ -7,7 +7,8 @@ export default function Navigation() {
     <ul>
       <li><Link to ="/">Student</Link></li>
       <li><Link to ="/book">Book</Link></li>
-      <li><a href="#">Transaction</a></li>
+      <li><Link to ="/transaction">Transaction</Link></li>
+      
     </ul>
   </div>
   )

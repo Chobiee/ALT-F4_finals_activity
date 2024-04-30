@@ -90,3 +90,17 @@
 .navigation ul li a{
     text-decoration: none;
 }
+
+
+
+
+.borrowed-table{
+    width:100%;
+}
+.borrowed-table th{
+    width:20%;
+}
+.borrowed-table td{
+    width:20%;
+    text-align:center;
+}
