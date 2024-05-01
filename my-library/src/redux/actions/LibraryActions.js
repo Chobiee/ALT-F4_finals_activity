@@ -35,10 +35,10 @@ export const setSelectedBook = (book) => {
     };
 };
 
-export const setSelectedBorrowed = (borrowed) => {
+export const setSelectedBorrowed = (borroweds) => {
     return{
-        type: ActionTypes.SELECTED_BORROWED,
-        payload: borrowed,
+        type: ActionTypes.SELECTED_BORROWEDS,
+        payload: borroweds,
     };
 };
 

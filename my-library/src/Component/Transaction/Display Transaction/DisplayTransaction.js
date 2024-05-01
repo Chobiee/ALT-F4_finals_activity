@@ -1,92 +1,84 @@
 import React,{useEffect} from 'react'
 import {useDispatch, useSelector} from 'react-redux';
-import { setSelectedBorrowed, setBorrowed } from '../../../redux/actions/LibraryActions';
+import {setBorrowed } from '../../../redux/actions/LibraryActions';
 import http from '../../../http';
 
 export default function DisplayTransaction() {
 
-  //const is functions
-
     const borroweds = useSelector((state) => state.allBorroweds.borroweds);
     const dispatch = useDispatch();
+    console.log(borroweds);
 
-    const getBorrowedId = (id)=>{
-      console.log(id);
-      // const singlestudent = students.filter((student)=>student.id===id)
-      const singleBorrowed = borroweds.find((borrowed)=>borrowed.id===id);
-      singleBorrowed.state="UPDATING";
+    const getBorrowedId = (id) => {
+        // Find the borrowed item with the given id
+        const singleBorrowed = borroweds.find((borrowed) => borrowed.id === id);
+        
+        // Update the status to "RETURNED"
+        singleBorrowed.Status = 'RETURNED';
 
-
-      dispatch(setSelectedBorrowed(singleBorrowed))
-      console.log(singleBorrowed);
-    }
-
-    // const getRemoveId = (id)=>{
-    //   const singleBorrowed1 = borroweds.find((borrowed)=>borrowed.id===id);
-    //   singleBorrowed1.state="REMOVED";
-
-    //   const oldBorrowed = [...borroweds];
-    //   const borrowedIndex = oldBorrowed.findIndex((borrowed)=>borrowed.id===id)
-    //   console.log(borrowedIndex);
-
-    //   oldBorrowed.splice(borrowedIndex, 1, singleBorrowed1);
-    //   dispatch(setBorrowed(oldBorrowed));
-    //   console.log(borroweds);
-    // }
-
-    const getBorrowedData=()=>{
-      http.get('borroweds').then((result)=>{
-        console.log(result.data);
-        dispatch(setBorrowed(result.data));
-      }).catch(error=>{
-        console.log(error.message);
-      });
-    }
-
-    useEffect(()=>{
-      getBorrowedData();
-    },[]);
-
-
-  return (
-    <>
-    <table className="borrowed-table">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Book Name</th>
-          <th>Student Name</th>
-          <th>Id</th>
-          <th>Date Borrowed</th>
-        </tr>
-        </thead>
-
-        <tbody>
-
-          {
-            borroweds.filter((borrowed)=>borrowed.status!='REMOVED')
-            .map((borrowed)=>{
-              return(
-                <tr key={borrowed.id}>
-                 <td>{borrowed.id}</td>
-                 <td>{borrowed.book_name}</td>
-                 <td>{borrowed.description}</td>
-                 <td>
-                  <button onClick={()=>getBorrowedId(borrowed.id)}>Return</button>
-                  &nbsp;
-                  
-
-                 </td>
-                 </tr>
-
-              )
+        // Send a PUT request to update the status
+        http.put(`borroweds/${id}`, singleBorrowed)
+            .then((response) => {
+                console.log(response.data);
+                // Update the Redux state with the updated borrowed items
+                const updatedBorroweds = borroweds.map((borrowed) =>
+                    borrowed.id === id ? singleBorrowed : borrowed
+                );
+                dispatch(setBorrowed(updatedBorroweds));
             })
+            .catch((error) => {
+                console.error('Error updating borrowed item:', error);
+            });
+    };
 
-          }
+    const getBorrowedData = () => {
+        http.get('borroweds')
+            .then((result) => {
+                console.log(result.data);
+                dispatch(setBorrowed(result.data));
+            })
+            .catch((error) => {
+                console.log(error.message);
+            });
+    };
 
-       
-        </tbody>
-      </table>
-    </>
-  )
+    useEffect(() => {
+        getBorrowedData();
+    }, []);
+
+    return (
+        <>
+            <table className="borrowed-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Book Name</th>
+                        <th>Student Name</th>
+                        <th>Id</th>
+                        <th>Date Borrowed</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {
+                    borroweds
+                        .filter((borrowed) => borrowed.Status !== 'REMOVED')
+                        .map((borrowed) => (
+                            <tr key={borrowed.id}>
+                                <td>{borrowed.id}</td>
+                                <td>{borrowed.Book_Name}</td>
+                                <td>{borrowed.Student_Name}</td>
+                                <td>{borrowed.Date_Borrowed}</td>
+                                <td>{borrowed.Status}</td>
+                                <td>
+                                    <button onClick={() => getBorrowedId(borrowed.id)}>Return</button>
+                                    &nbsp;
+                                </td>
+                            </tr>
+                        ))
+                        }
+                </tbody>
+            </table>
+        </>
+    );
 }

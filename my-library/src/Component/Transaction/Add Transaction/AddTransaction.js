@@ -1,110 +1,51 @@
-import React, {useState,useEffect} from 'react';
-import { useDispatch,useSelector } from 'react-redux';
-import {setBook,setSelectedBook} from '../../../redux/actions/LibraryActions';
+import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { setBorrowed } from '../../../redux/actions/LibraryActions';
 import http from '../../../http';
 
 export default function AddTransaction() {
-const [ Book_Name, setBookname] = useState ('');
-const [ description, setDescription] = useState ('');
-const dispatch = useDispatch();
-const books = useSelector((state)  => state.allBooks.books); 
-const onebook = useSelector((state)  => state.singleBook);
+    const [studentId, setStudentId] = useState('');
+    const [bookId, setBookId] = useState('');
+    const dispatch = useDispatch();
 
-console.log(onebook);
+    const addBorrowed = () => {
+        const newBorrowed = {
+            student_id: studentId,
+            book_id: bookId,
+        };
 
-const addBook=()=>{
-  const newbook={
-    Book_Name :Book_Name, 
-    description :description,
-    status: 'AVAILABLE'
-  }
+        // Send a POST request to the Laravel backend
+        http.post('borroweds', newBorrowed)
+            .then((response) => {
+                console.log(response.data);
+                // Update Redux state after successfully adding the borrowed item
+                dispatch(setBorrowed(response.data));
+                // Clear input fields
+                setStudentId('');
+                setBookId('');
+            })
+            .catch((error) => {
+                console.error('Error adding borrowed item:', error);
+            });
+    };
 
-   //Database connection
-   http.post('books', newbook).then((result)=>{
-    console.log(result.data);
-   }).catch(error=>{
-     console.log(error.message);
-   });
- 
-
-  const oldBook = [...books];
-  oldBook.push(newbook);
-  dispatch(setBook(oldBook));
-
-  setBookname(''); //to clear inputs inside textbox when updating
-  setDescription('');  //to clear inputs inside textbox when updating
+    return (
+        <div className="borrowed-form">
+            <input
+                type="text"
+                value={studentId}
+                placeholder="Enter Student ID"
+                onChange={(e) => setStudentId(e.target.value)}
+            />
+            <input
+                type="text"
+                value={bookId}
+                placeholder="Enter Book ID"
+                onChange={(e) => setBookId(e.target.value)}
+            />
+            <button onClick={addBorrowed} className="add-book">
+                BORROW
+            </button>
+        </div>
+    );
 }
-
-const updateBook=()=>{
-  const newbook={
-    id:onebook.id,
-    Book_Name :Book_Name,
-    description :description,
-    status: 'AVAILABLE'
-  }
-
-  const newbook2={
-    Book_Name :Book_Name,
-    description :description,
-    status: 'AVAILABLE'
-  }
-
-
-  http.put(`books/${onebook.id}`, newbook2).then((result)=>{
-    console.log(result.data);
-   }).catch(error=>{
-     console.log(error.message);
-   }); 
-
-
-  const oldBook = [...books];
-  const bookIndex = oldBook.findIndex((book)=>book.id===onebook.id)
-  console.log(bookIndex);
-
-  oldBook.splice(bookIndex, 1, newbook);
-  dispatch(setBook(oldBook));
-
-  onebook.Book_Name='';
-  onebook.description='';
-  onebook.status='AVAILABLE';
-  dispatch(setSelectedBook(onebook))
-
-  setBookname(''); //to clear inputs inside textbox when updating
-  setDescription('');  //to clear inputs inside textbox when updating
-}
-
-useEffect(()=>{
-  if(onebook.Book_Name===''){
-
-  }else{
-    setBookname(onebook.Book_Name);
-    setDescription(onebook.description);
-  }
-
-}, [onebook])
-
-  return (
-    <>
-    <div className="book-form">
-      <input type="text" 
-                value ={Book_Name}
-                placeholder="Enter book name"
-                onChange={(e)=> setBookname (e.target.value)}/>
-      <input type="text" 
-                value ={description}
-                placeholder="Enter description"
-                onChange={(e)=> setDescription (e.target.value)}/>
-
-
-          {
-            onebook.state==='UPDATING'?
-            <button onClick={()=>updateBook()} className="update-book">Update</button>
-            :
-            <button onClick={()=>addBook()} className="add-book">Add</button>
-          }
-      
-   </div>
-   </>
-  )
-}
-    

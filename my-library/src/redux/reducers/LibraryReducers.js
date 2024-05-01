@@ -13,6 +13,12 @@ const initialStates ={
         
     ]
 }
+const initialStates1 ={
+
+    borroweds: [
+        
+    ]
+}
 
 const singleStudentInitialized={
     id:'',
@@ -26,6 +32,14 @@ const singleBookInitialized={
     bookname:'',
     description:'',
     status:'AVAILABLE'
+}
+
+const singleBorrowedInitialized={
+    id:'',
+    Book_Name:'',
+    Student_Name:'',
+    Date_Borrowed:'',
+    Status:'BORROWED'
 }
 
 export const LibraryReducers = (state=initialState, {type,payload}) => {
@@ -47,6 +61,16 @@ export const BookReducers = (state=initialStates, {type,payload}) => {
            return state;
      }
    }
+
+   export const BorrowedReducers = (state=initialStates1, {type,payload}) => {
+    switch (type) {
+       case ActionTypes.SET_BORROWEDS:
+           return {...state, borroweds:payload};
+   
+       default:
+           return state;
+     }
+   }
    
    export const selectedStudentReducer = (state=singleStudentInitialized, {type,payload}) => {
     switch (type) {
@@ -61,6 +85,16 @@ export const BookReducers = (state=initialStates, {type,payload}) => {
    export const selectedBookReducer = (state=singleBookInitialized, {type,payload}) => {
     switch (type) {
        case ActionTypes.SELECTED_BOOK:
+           return {...state, ...payload};
+   
+       default:
+           return state;
+     }
+   }
+
+   export const selectedBorrowedReducers = (state=singleBorrowedInitialized, {type,payload}) => {
+    switch (type) {
+       case ActionTypes.SELECTED_BORROWEDS:
            return {...state, ...payload};
    
        default:
